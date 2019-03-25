@@ -1,0 +1,302 @@
+<!-- Matthew Threader - 101034977
+Assignment 3 - Multi-User Interaction - Egg Hunt -->
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+    <body>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="https://aframe.io/releases/0.9.0/aframe.min.js"></script>
+        <a-scene id="MainArea">
+            <!-- Player -->
+            <a-obj-model src="head.obj" mtl="head.mtl" scale="0.025 0.025 0.025" id="PlayerHead_HOST"  ></a-obj-model>
+            <a-obj-model src="body.obj" mtl="body.mtl" scale="0.025 0.025 0.025" id="PlayerBody_HOST" ></a-obj-model>
+            <a-entity id="Player" position="0 0 0">
+                <a-camera id="Camera" fov="90" wasd-controls="acceleration: 1000">
+                    <a-text id="timer" value="Egg Hunt" position="0 0.0075 -0.01" width="0.025" height="0.025" color="#000000" align="center"></a-text>
+                    <a-text id="Title" value="C for COOP | V for Versus" position="0 0.0065 -0.01" width="0.015" height="0.015" color="#000000" align="center"></a-text>
+                    <a-text id="ReadyTag" value="Space to Ready!" position="0 0.0050 -0.01" width="0.025" height="0.025" color="#000000" align="center"></a-text>
+                    <a-text id="Score" value="Score" position="0 -0.0075 -0.01" width="0.025" height="0.025" color="#000000" align="center"></a-text>
+                </a-camera>
+            </a-entity>
+            <!-- Boxes -->
+            <a-box position="-3 1 -4" width="2" height="2" depth="2" rotation="0 0 0" color="grey"></a-box>
+            <a-box position="4 1 3" width="4" height="2" depth="2" rotation="0 0 0" color="grey"></a-box>
+            <a-box position="-8 1 7" width="4" height="2" depth="2" rotation="0 0 0" color="grey"></a-box>
+            <a-box position="8 1 -7" width="2" height="2" depth="2" rotation="0 0 0" color="grey"></a-box>
+            <a-box position="-7 1 -0" width="2" height="2" depth="5" rotation="0 0 0" color="grey"></a-box>
+            <a-box position="7 1 -1" width="5" height="2" depth="2" rotation="0 0 0" color="grey"></a-box>
+            <a-box position="-2 1 2" width="4" height="2" depth="2" rotation="0 0 0" color="grey"></a-box>
+            <a-box position="-2 1 -8" width="4" height="2" depth="2" rotation="0 0 0" color="grey"></a-box>
+            <a-box position="-1 1 6" width="2" height="2" depth="2" rotation="0 0 0" color="grey"></a-box>
+            <a-box position="2 1 -4" width="2" height="2" depth="4" rotation="0 0 0" color="grey"></a-box>
+            <!-- Walls -->
+            <a-box position="0 0 10" width="20" height="5" depth="1" rotation="0 0 0" color="black"></a-box>
+            <a-box position="0 0 -10" width="20" height="5" depth="1" rotation="0 0 0" color="black"></a-box>
+            <a-box position="10 0 0" width="1" height="5" depth="20" rotation="0 0 0" color="black"></a-box>
+            <a-box position="-10 0 0" width="1" height="5" depth="20" rotation="0 0 0" color="black"></a-box>
+
+            <a-plane rotation="-90 0 0" width="20" height="20" color="#white"></a-plane>          
+            <a-sky color="#ECECEC"></a-sky>
+            <!-- Eggs -->
+            <a-sphere id="EGG1" position="5 0.25 -5" radius="0.25" color="red"></a-sphere>
+            <a-sphere id="EGG2" position="-5 0.25 -5" radius="0.25" color="orange"></a-sphere>
+            <a-sphere id="EGG3" position="1 0.25 2" radius="0.25" color="yellow"></a-sphere>
+            <a-sphere id="EGG4" position="-3 0.25 6" radius="0.25" color="green"></a-sphere>
+            <a-sphere id="EGG5" position="5 0.25 5" radius="0.25" color="blue"></a-sphere>
+        </a-scene>
+
+        <script>
+            let socket = io();
+            let PlayerReady_CLIENT = false;
+            let PlayerReady_HOST = false;
+            let GameActive_CLIENT = false;
+            let GameFinish_CLIENT = false;
+            let isCOOP_CLIENT = false;
+            let isVersus_CLIENT = false;
+            let ModeChoosen_CLIENT = false;
+            let GameChoice_CLIENT = false;
+            let PlayerScore_CLIENT = 0;
+            let PlayerScore_HOST = 0;
+
+            socket.on('connect', function() {
+                console.log("connected!");
+            });
+
+            socket.on('GameState', function() {
+                if(!GameActive_CLIENT)
+                {
+                    GameActive_CLIENT = true;
+                    ReadyTag.setAttribute('value', "Go Collect Eggs");
+                    ReadyTag.setAttribute('color', "black" );
+                }
+            });
+
+
+            socket.on('GameFinish', function() {
+                if(!GameFinish_CLIENT)
+                {
+                    GameFinish_CLIENT = true;
+                    if(isVersus_CLIENT && PlayerScore_CLIENT > 2)
+                    {
+                    ReadyTag.setAttribute('value', "YOU WIN");
+                    ReadyTag.setAttribute('color', "green" );
+                    }
+                    if(isVersus_CLIENT && PlayerScore_CLIENT < 3)
+                    {
+                    ReadyTag.setAttribute('value', "YOU LOSE");
+                    ReadyTag.setAttribute('color', "red" );
+                    }
+
+                    if(isCOOP_CLIENT)
+                    {
+                    ReadyTag.setAttribute('value', "Hunt Complete");
+                    ReadyTag.setAttribute('color', "black" );
+                    console.log(PlayerScore_CLIENT);
+                    }
+                }
+            });
+
+            document.addEventListener("keyup", function(event) {
+            
+            if(!PlayerReady_CLIENT && event.which === 32 && ModeChoosen_CLIENT)
+            {
+                PlayerReady_CLIENT = true;
+                socket.emit('PlayerReady_CLIENT', event.which);
+                console.log("COOP");
+                ReadyTag.setAttribute('value', "READY");
+                ReadyTag.setAttribute('color', "green" );
+            }
+
+            if(!PlayerReady_CLIENT && event.which === 67 && !ModeChoosen_CLIENT)
+            {
+                isCOOP_CLIENT = true;
+                ModeChoosen_CLIENT = true;
+                console.log("VS");
+                socket.emit('ChoiceClient', 'COOP');
+                Title.setAttribute('value', "COOP MODE");
+                Title.setAttribute('color', "green" );
+            }
+
+            if(!PlayerReady_CLIENT && event.which === 86 && !ModeChoosen_CLIENT)
+            {
+                isVersus_CLIENT = true;
+                ModeChoosen_CLIENT = true
+                socket.emit('ChoiceClient', 'VS');
+                Title.setAttribute('value', "VS MODE");
+                Title.setAttribute('color', "red" );
+            }
+
+            });
+
+            let Player_CLIENT = document.getElementById("Camera");
+            let Scene = document.getElementById("MainArea");
+            PlayerBody_HOST = document.getElementById("PlayerBody_HOST");
+            PlayerHead_HOST = document.getElementById("PlayerHead_HOST");
+            Timer = document.getElementById("timer");
+            ReadyTag = document.getElementById("ReadyTag");
+            Title = document.getElementById("Title");
+            Score = document.getElementById("Score");
+
+            EGG1 = document.getElementById("EGG1");
+            EGG2 = document.getElementById("EGG2");
+            EGG3 = document.getElementById("EGG3");
+            EGG4 = document.getElementById("EGG4");
+            EGG5 = document.getElementById("EGG5");
+
+            EGG1Collected = false;
+            EGG2Collected = false;
+            EGG3Collected = false;
+            EGG4Collected = false;
+            EGG5Collected = false;
+
+            setInterval(function(){ 
+
+                if(isVersus_CLIENT)
+                {
+                    Score.setAttribute('value', PlayerScore_CLIENT);
+                }
+
+                if(isCOOP_CLIENT)
+                {
+                    Score.setAttribute('value', "Eggs Collected: " + PlayerScore_CLIENT);
+                }
+
+            CLIENTPos = Player_CLIENT.getAttribute('position')
+            HOSTPos = PlayerHead_HOST.getAttribute('position')
+            Egg1Pos = EGG1.getAttribute('position')
+            Egg2Pos = EGG2.getAttribute('position')
+            Egg3Pos = EGG3.getAttribute('position')
+            Egg4Pos = EGG4.getAttribute('position')
+            Egg5Pos = EGG5.getAttribute('position')
+
+            if(GameActive_CLIENT)
+                {
+                    if(EGG1Collected)
+                {
+                socket.emit('EGG1Collected', "EGG1 FOUND");
+                }
+
+                if(EGG2Collected)
+                {
+                socket.emit('EGG2Collected', "EGG2 FOUND");
+                }
+                if(EGG3Collected)
+                {
+                socket.emit('EGG3Collected', "EGG3 FOUND");
+                }
+                if(EGG4Collected)
+                {
+                socket.emit('EGG4Collected', "EGG4 FOUND");
+                }
+                if(EGG5Collected)
+                {
+                socket.emit('EGG5Collected', "EGG5 FOUND");
+                }
+
+                // EGG COllsions
+                //For CLIENT
+                if(!EGG1Collected && CLIENTPos.x < Egg1Pos.x + 0.25 && CLIENTPos.x > Egg1Pos.x - 0.25 && CLIENTPos.z < Egg1Pos.z + 0.25 && CLIENTPos.z > Egg1Pos.z - 0.25)
+                {
+                        Scene.removeChild(EGG1);
+                        EGG1Collected = true;
+                        PlayerScore_CLIENT++;           
+                }
+
+                if(!EGG2Collected && CLIENTPos.x < Egg2Pos.x + 0.25 && CLIENTPos.x > Egg2Pos.x - 0.25 && CLIENTPos.z < Egg2Pos.z + 0.25 && CLIENTPos.z > Egg2Pos.z - 0.25)
+                {
+                        Scene.removeChild(EGG2);
+                        PlayerScore_CLIENT++;           
+                        EGG2Collected = true;
+                }
+
+                if(!EGG3Collected && CLIENTPos.x < Egg3Pos.x + 0.25 && CLIENTPos.x > Egg3Pos.x - 0.25 && CLIENTPos.z < Egg3Pos.z + 0.25 && CLIENTPos.z > Egg3Pos.z - 0.25)
+                {
+                        PlayerScore_CLIENT++;           
+                        Scene.removeChild(EGG3);
+                        EGG3Collected = true;
+                }
+
+                if(!EGG4Collected && CLIENTPos.x < Egg4Pos.x + 0.25 && CLIENTPos.x > Egg4Pos.x - 0.25 && CLIENTPos.z < Egg4Pos.z + 0.25 && CLIENTPos.z > Egg4Pos.z - 0.25)
+                {
+                        PlayerScore_CLIENT++;           
+                        Scene.removeChild(EGG4);
+                        EGG4Collected = true;
+                }
+
+                if(!EGG5Collected && CLIENTPos.x < Egg5Pos.x + 0.25 && CLIENTPos.x > Egg5Pos.x - 0.25 && CLIENTPos.z < Egg5Pos.z + 0.25 && CLIENTPos.z > Egg5Pos.z - 0.25)
+                {
+                        PlayerScore_CLIENT++;           
+                        Scene.removeChild(EGG5);        
+                        EGG5Collected = true;
+                }
+
+                //For HOST
+                if(!EGG1Collected && HOSTPos.x < Egg1Pos.x + 0.25 && HOSTPos.x > Egg1Pos.x - 0.25 && HOSTPos.z < Egg1Pos.z + 0.25 && HOSTPos.z > Egg1Pos.z - 0.25)
+                {   
+                        Scene.removeChild(EGG1);
+                        EGG1Collected = true;
+                }
+
+                if(!EGG2Collected && HOSTPos.x < Egg2Pos.x + 0.25 && HOSTPos.x > Egg2Pos.x - 0.25 && HOSTPos.z < Egg2Pos.z + 0.25 && HOSTPos.z > Egg2Pos.z - 0.25)
+                {
+                        Scene.removeChild(EGG2);
+                        EGG2Collected = true;
+                }
+
+                if(!EGG3Collected && HOSTPos.x < Egg3Pos.x + 0.25 && HOSTPos.x > Egg3Pos.x - 0.25 && HOSTPos.z < Egg3Pos.z + 0.25 && HOSTPos.z > Egg3Pos.z - 0.25)
+                {
+                        Scene.removeChild(EGG3);
+                        EGG3Collected = true;
+                }
+
+                if(!EGG4Collected && HOSTPos.x < Egg4Pos.x + 0.25 && HOSTPos.x > Egg4Pos.x - 0.25 && HOSTPos.z < Egg4Pos.z + 0.25 && HOSTPos.z > Egg4Pos.z - 0.25)
+                {
+                        Scene.removeChild(EGG4);
+                        EGG4Collected = true;
+                }
+
+                if(!EGG5Collected && HOSTPos.x < Egg5Pos.x + 0.25 && HOSTPos.x > Egg5Pos.x - 0.25 && HOSTPos.z < Egg5Pos.z + 0.25 && HOSTPos.z > Egg5Pos.z - 0.25)
+                {
+                        Scene.removeChild(EGG5);
+                        EGG5Collected = true;
+                }
+                }
+
+
+                }, 100);
+
+
+            setInterval(function(){ 
+                socket.emit('position_CLIENT', Player_CLIENT.getAttribute('position') );      
+                socket.emit('rotation_CLIENT', Player_CLIENT.getAttribute('rotation') );
+                socket.emit('PlayerReady_CLIENT', PlayerReady_CLIENT);
+            }, 10);
+
+            socket.on('GetPosition_HOST', function(data) {
+                PlayerBody_HOST.setAttribute('position', {x:data.x, y:0, z:data.z})
+                PlayerHead_HOST.setAttribute('position', {x:data.x, y:data.y - 0.3, z:data.z})
+
+            });
+
+            socket.on('GetRotation_HOST', function(data) {
+                PlayerBody_HOST.setAttribute('rotation', {x:0, y:data.y -180, z:data.z})
+                PlayerHead_HOST.setAttribute('rotation', {x:-data.x, y:data.y + 180, z:data.z})
+            });
+
+            socket.on('ShowReady_HOST', function(data) {
+                console.log("HOST Ready: " + data);
+            });
+
+            socket.on('TIME', function(data) {
+                
+                if(isCOOP_CLIENT)
+                {
+                    var value = data.toFixed(1);
+                    Timer.setAttribute('value', value)
+                }
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,68 @@
+newmtl aiStandardSurface2SG
+illum 4
+Kd 1.00 0.67 0.45
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl aiStandardSurface3SG
+illum 4
+Kd 0.03 0.02 0.01
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl aiStandardSurface4SG
+illum 4
+Kd 0.05 0.02 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl aiStandardSurface6SG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl aiStandardSurface7SG
+illum 4
+Kd 0.01 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl aiStandardSurface8SG
+illum 4
+Kd 0.04 0.01 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+bump Pants_Bump.png -bm 0
+Ni 1.00
+newmtl lambert11SG
+illum 4
+Kd 0.04 0.02 0.01
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl threaderM_S01_A02_Project_Rigging_V2_3A_aiStandardSurface5SG
+illum 4
+Kd 0.81 0.57 0.40
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl threaderM_S01_A02_Project_Rigging_V2_3A_aiStandardSurface6SG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl threaderM_S01_A02_Project_Rigging_V2_3A_aiStandardSurface8SG
+illum 4
+Kd 0.05 0.02 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+bump Pants_Bump.png -bm 0
+Ni 1.00
+newmtl threaderM_S01_A02_Project_Rigging_V2_3A_aiStandardSurface9SG
+illum 4
+Kd 0.05 0.02 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00

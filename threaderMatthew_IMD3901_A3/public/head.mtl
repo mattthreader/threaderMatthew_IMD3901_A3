@@ -1,0 +1,54 @@
+newmtl aiStandardSurface2SG
+illum 4
+Kd 1.00 0.67 0.45
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl aiStandardSurface3SG
+illum 4
+Kd 0.03 0.02 0.01
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl aiStandardSurface4SG
+illum 4
+Kd 0.05 0.02 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl head_aiStandardSurface2SG
+illum 4
+Kd 1.00 0.67 0.45
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl head_aiStandardSurface3SG
+illum 4
+Kd 0.03 0.02 0.01
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl head_aiStandardSurface4SG
+illum 4
+Kd 0.05 0.02 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl head_pasted__threaderM_S01_A02_Project_Rigging_V1_9_aiStandardSurface1SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 0.00
+newmtl lambert6SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl pasted__threaderM_S01_A02_Project_Rigging_V1_9_aiStandardSurface1SG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
